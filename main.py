@@ -8,7 +8,11 @@ hotels = [
     {"id": 2, "title": "Дубай", "name": "dubai"},
 ]
 
-@app.get("/hotels")
+
+@app.get(
+    "/hotels",
+    summary="Отели",
+    description="Отображение списка всех отелей, либо посмотр информации по одному отелю по id и/или title")
 def get_hotels(
         id: int | None = Query(None, description="Айдишник"),
         title: str | None = Query(None, description="Название отеля"),
@@ -23,7 +27,10 @@ def get_hotels(
     return hotels_
 
 
-@app.delete("/hotels/{hotel_id}")
+@app.delete(
+    "/hotels/{hotel_id}",
+    summary="Удаление отеля",
+    description="Удаление отеля по id")
 def delete_hotel(hotel_id: int):
     global hotels
     hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id]
@@ -31,7 +38,10 @@ def delete_hotel(hotel_id: int):
 
 
 #body, request body
-@app.post("/hotels")
+@app.post(
+    "/hotels",
+    summary="Добавление отеля",
+    description="Добавление нового отеля при отправке title")
 def create_hotel(
         title: str = Body(embed=True),
 ):
@@ -52,7 +62,10 @@ def find_hotel_id(hotel_id: int):
     return None
 
 
-@app.put("/hotels/{hotel_id}")
+@app.put(
+    "/hotels/{hotel_id}",
+    summary="Полное обновление данных об отеле",
+    description="Изменение title и name по id отеля")
 def put_hotel(
         hotel_id: int,
         title: str = Body(),
@@ -70,7 +83,10 @@ def put_hotel(
                 "description": "Такого hotel_id не существует"}
 
 
-@app.patch("/hotels/{hotel_id}")
+@app.patch(
+    "/hotels/{hotel_id}",
+    summary="Частичное обновление данных об отеле",
+    description="Изменение title или name или title+name по id отеля")
 def patch_hotel(
         hotel_id: int,
         title: str | None = Body(None),
@@ -78,11 +94,15 @@ def patch_hotel(
         ):
     hotel = find_hotel_id(hotel_id)
     if hotel is not None:
-        if title is not None:
-            hotel["title"] = title
-        if name is not None:
-            hotel["name"] = name
-        return hotel
+        if title is not None or name is not None:
+            if title is not None:
+                hotel["title"] = title
+            if name is not None:
+                hotel["name"] = name
+            return hotel
+        else:
+            return {"status": "Fail",
+                    "description": "Нет данных для изменения"}
     else:
         return {"status": "Fail",
                 "description": "Такого hotel_id не существует"}
