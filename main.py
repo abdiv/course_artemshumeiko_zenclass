@@ -43,5 +43,50 @@ def create_hotel(
     return {"status": "OK"}
 
 
+def find_hotel_id(hotel_id: int):
+    """Проверка наличия отеля по ID"""
+    global hotels
+    for hotel in hotels:
+        if hotel["id"] == hotel_id:
+            return hotel
+    return None
+
+
+@app.put("/hotels/{hotel_id}")
+def put_hotel(
+        hotel_id: int,
+        title: str = Body(),
+        name: str = Body()
+        ):
+    hotel = find_hotel_id(hotel_id)
+    if hotel is not None:
+        hotel.update({
+            "title": title,
+            "name": name
+        })
+        return hotel
+    else:
+        return {"status": "Fail",
+                "description": "Такого hotel_id не существует"}
+
+
+@app.patch("/hotels/{hotel_id}")
+def patch_hotel(
+        hotel_id: int,
+        title: str | None = Body(None),
+        name: str | None = Body(None)
+        ):
+    hotel = find_hotel_id(hotel_id)
+    if hotel is not None:
+        if title is not None:
+            hotel["title"] = title
+        if name is not None:
+            hotel["name"] = name
+        return hotel
+    else:
+        return {"status": "Fail",
+                "description": "Такого hotel_id не существует"}
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True, reload_delay=2)
