@@ -42,7 +42,16 @@ def delete_hotel(hotel_id: int):
     "",
     summary="Добавление отеля",
     description="Добавление нового отеля при отправке title")
-def create_hotel(hotel_data: Hotel):
+def create_hotel(hotel_data: Hotel = Body(openapi_examples={
+    "1": {"summary": "Сочи", "value": {
+        "title": "Отель Сочи 5 звезд у моря",
+        "name": "sochi_u_morya",
+    }},
+    "2": {"summary": "Дубай", "value": {
+        "title": "Отель Дубай у фонтана",
+        "name": "dubai_fountain",
+    }},
+})):
     global hotels
     hotels.append({
             "id": hotels[-1]["id"] + 1,
